@@ -240,8 +240,8 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
     story.append(Paragraph("3. Model Selection & Trade-Offs", h1_style))
     story.append(Paragraph(
         "Four model paradigms were evaluated on an 80/20 chronological holdout test set (final 30 days): "
-        "<b>(1) 7-Day Naive Seasonal</b> ($y_{t-7}$), <b>(2) 14-Day Rolling Mean</b>, <b>(3) Holt-Winters Exponential Smoothing</b> (additive weekly seasonality), "
-        "and <b>(4) XGBoost Gradient Boosted Decision Trees</b> incorporating lag variables ($t-1$ to $t-28$), rolling means/volatilities, calendar flags, and location embeddings. "
+        "<b>(1) 7-Day Naive Seasonal</b> (<i>y<sub>t&minus;7</sub></i>), <b>(2) 14-Day Rolling Mean</b>, <b>(3) Holt-Winters Exponential Smoothing</b> (additive weekly seasonality), "
+        "and <b>(4) XGBoost Gradient Boosted Decision Trees</b> incorporating lag variables (<i>t</i>&minus;1 to <i>t</i>&minus;28), rolling means/volatilities, calendar flags, and location embeddings. "
         "Because bar demand is highly intermittent (83.88% zeros), standard MAPE is unusable due to zero-division. We evaluate using <b>WAPE</b> (Weighted Absolute Percentage Error), "
         "which weights absolute errors by total volume, alongside MAE and RMSE.",
         body_style
@@ -303,7 +303,8 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
     # Page 2: Prompt 4 - Performance & Simulation Results
     story.append(Paragraph("4. Performance Benchmarks & Simulation Findings", h1_style))
     story.append(Paragraph(
-        "Dynamic Par Levels were formulated as $\\text{Par} = (\\hat{D}_{\\text{daily}} \\times L) + Z \\cdot (\\sigma_{\\text{daily}} \\sqrt{L})$, where $Z = 1.645$ targeting 95% service level. "
+        "Dynamic Par Levels were formulated as <b>Par = (<i>D&#770;</i><sub>daily</sub> &times; <i>L</i>) + <i>Z</i> &middot; (&sigma;<sub>daily</sub> &radic;<i>L</i>)</b>, "
+        "where <i>Z</i> = 1.645 targeting 95% service level. "
         "A 30-day discrete-event inventory simulation was backtested across all 96 bar-brand inventory channels (2,880 total channel-days), comparing three operational policies:",
         body_style
     ))
@@ -423,7 +424,11 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
     story.append(Spacer(1, 4))
 
     story.append(Paragraph("<b>Operational Failure Modes & Production Safeguards:</b>", body_style))
-    story.append(Paragraph("• <b>Lead Time Uncertainty:</b> Delivery delays (e.g. 4 days instead of 2) cause stockouts under deterministic assumptions. The production system applies stochastic lead-time variance $\\sigma_{\\text{total}} = \\sqrt{L \\sigma_D^2 + D^2 \\sigma_L^2}$.", bullet_style))
+    story.append(Paragraph(
+        "• <b>Lead Time Uncertainty:</b> Delivery delays (e.g. 4 days instead of 2) cause stockouts under deterministic assumptions. "
+        "The production system applies stochastic lead-time variance <b>&sigma;<sub>total</sub> = &radic;(<i>L &middot; &sigma;<sub>D</sub></i><sup>2</sup> + <i>D</i><sup>2</sup> &middot; <i>&sigma;<sub>L</sub></i><sup>2</sup>)</b>.",
+        bullet_style
+    ))
     story.append(Paragraph("• <b>Data & Concept Drift:</b> Monitored via continuous tracking of 14-day rolling WAPE and Kolmogorov-Smirnov tests on demand distributions. Automated alerting triggers if WAPE exceeds baseline by $>15\\%$, scheduling automated model retraining.", bullet_style))
     story.append(Paragraph("• <b>Pouring Waste & Discrepancies:</b> Unrecorded spillage or over-pouring is corrected through weekly physical bottle audit reconciliations that recalibrate the baseline opening balance.", bullet_style))
 
