@@ -140,14 +140,51 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
         alignment=1
     )
 
+    th_style = ParagraphStyle(
+        "TH_Style",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=7.5,
+        leading=9.5,
+        textColor=colors.white,
+    )
+
+    th_center_style = ParagraphStyle(
+        "TH_Center_Style",
+        parent=th_style,
+        alignment=1,
+    )
+
+    td_style = ParagraphStyle(
+        "TD_Style",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=7.5,
+        leading=9.5,
+        textColor=colors.HexColor("#2d3748"),
+    )
+
+    td_bold_style = ParagraphStyle(
+        "TDBold_Style",
+        parent=td_style,
+        fontName="Helvetica-Bold",
+        textColor=colors.HexColor("#1a365d"),
+    )
+
+    td_center_style = ParagraphStyle(
+        "TDCenter_Style",
+        parent=td_style,
+        alignment=1,
+    )
+
     story: List[Any] = []
 
     # Title & Metadata Banner
     story.append(Paragraph("Hotel Bar Inventory Optimization & Dynamic Par System", title_style))
     story.append(Spacer(1, 2))
     story.append(Paragraph("<b>Executive Summary & Technical Decision Brief</b> | Portfolio: 6 Hotel Bars, 16 Brands, 366 Days", subtitle_style))
-    story.append(Spacer(1, 6))
-    story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1a365d"), spaceBefore=0, spaceAfter=6))
+    story.append(Spacer(1, 5))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#1a365d"), spaceBefore=0, spaceAfter=5))
 
     # KPI Summary Cards
     kpi_data = [
@@ -169,11 +206,11 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f7fafc")),
         ('BOX', (0, 0), (-1, -1), 0.8, colors.HexColor("#e2e8f0")),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-        ('TOPPADDING', (0, 0), (-1, -1), 4),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
     ]))
     story.append(kpi_table)
-    story.append(Spacer(1, 7))
+    story.append(Spacer(1, 6))
 
     # Prompt 1: Core Business Problem & Operational Impact
     story.append(Paragraph("1. Core Business Problem & Operational Impact", h1_style))
@@ -188,7 +225,7 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
         "machine-learning-driven demand forecasting and dynamic par replenishment engine.",
         body_style
     ))
-    story.append(Spacer(1, 5))
+    story.append(Spacer(1, 4))
 
     # Prompt 2: Assumptions Made
     story.append(Paragraph("2. Operational Assumptions & Boundaries", h1_style))
@@ -197,7 +234,7 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
     story.append(Paragraph("• <b>Conservation Integrity:</b> Physical fluid balances strictly adhere to <i>Closing = Opening + Purchase - Consumed</i> (100% verified across records).", bullet_style))
     story.append(Paragraph("• <b>Zero-Consumption Modeling:</b> 83.88% of series-days observe zero consumption; missing days are treated as explicit zero demand, not missing values.", bullet_style))
     story.append(Paragraph("• <b>Continuous Pours:</b> Inventory is tracked continuously in milliliters (ml); conversion to discrete 750ml/1L bottle units occurs at purchase order generation.", bullet_style))
-    story.append(Spacer(1, 5))
+    story.append(Spacer(1, 4))
 
     # Prompt 3: Model Selection & Trade-Offs
     story.append(Paragraph("3. Model Selection & Trade-Offs", h1_style))
@@ -213,23 +250,50 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
 
     # Model Evaluation Table
     model_data = [
-        ["Model Architecture", "MAE (ml)", "RMSE (ml)", "WAPE (%)", "Operational Strengths & Key Trade-Offs"],
-        ["14-Day Rolling Mean", "93.00", "149.25", "167.3%", "Fast & simple, but lags behind rapid weekend surges; overstocks on Mondays"],
-        ["Holt-Winters (Additive)", "93.71", "147.41", "168.5%", "Captures weekly cycles well; sensitive to prolonged zero-demand streaks"],
-        ["XGBoost ML Regressor", "94.63", "146.49", "170.2%", "Lowest RMSE (best peak handling); captures non-linear cross-bar demand features"],
-        ["7-Day Naive Seasonal", "98.06", "205.39", "176.3%", "High volatility; propagates single-day demand anomalies into future weeks"]
+        [
+            Paragraph("Model Architecture", th_style),
+            Paragraph("MAE (ml)", th_center_style),
+            Paragraph("RMSE (ml)", th_center_style),
+            Paragraph("WAPE (%)", th_center_style),
+            Paragraph("Operational Strengths & Key Trade-Offs", th_style)
+        ],
+        [
+            Paragraph("14-Day Rolling Mean", td_bold_style),
+            Paragraph("93.00", td_center_style),
+            Paragraph("149.25", td_center_style),
+            Paragraph("167.3%", td_center_style),
+            Paragraph("Fast & simple, but lags behind rapid weekend surges; overstocks on Mondays", td_style)
+        ],
+        [
+            Paragraph("Holt-Winters (Additive)", td_bold_style),
+            Paragraph("93.71", td_center_style),
+            Paragraph("147.41", td_center_style),
+            Paragraph("168.5%", td_center_style),
+            Paragraph("Captures weekly cycles well; sensitive to prolonged zero-demand streaks", td_style)
+        ],
+        [
+            Paragraph("XGBoost ML Regressor", td_bold_style),
+            Paragraph("94.63", td_center_style),
+            Paragraph("146.49", td_center_style),
+            Paragraph("170.2%", td_center_style),
+            Paragraph("Lowest RMSE (best peak handling); captures non-linear cross-bar demand features", td_style)
+        ],
+        [
+            Paragraph("7-Day Naive Seasonal", td_bold_style),
+            Paragraph("98.06", td_center_style),
+            Paragraph("205.39", td_center_style),
+            Paragraph("176.3%", td_center_style),
+            Paragraph("High volatility; propagates single-day demand anomalies into future weeks", td_style)
+        ]
     ]
-    model_table = Table(model_data, colWidths=[110, 52, 52, 54, 236])
+    model_table = Table(model_data, colWidths=[108, 48, 50, 52, 246])
     model_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#1a365d")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 7.5),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f7fafc")]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ('TOPPADDING', (0, 0), (-1, -1), 3),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-        ('ALIGN', (1, 0), (3, -1), 'CENTER'),
+        ('TOPPADDING', (0, 0), (-1, -1), 2.5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2.5),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     story.append(model_table)
 
@@ -247,25 +311,54 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
 
     # Simulation Comparison Table
     sim_data = [
-        ["Replenishment Policy", "Stockouts", "Lost Vol (L)", "Fill Rate (%)", "Service Lvl (%)", "Holding Vol (L)", "Turnover"],
-        ["Lean Baseline (1d Buffer)", "432", "104.3 L", "34.87%", "85.00%", "8.7 L", "18.5x"],
-        ["Static Average Par Level", "155", "24.7 L", "84.60%", "94.62%", "32.6 L", "4.9x"],
-        ["Dynamic ML Par (Proposed)", "146", "26.8 L", "83.26%", "94.93%", "36.3 L", "4.4x"]
+        [
+            Paragraph("Replenishment Policy", th_style),
+            Paragraph("Stockouts", th_center_style),
+            Paragraph("Lost Vol (L)", th_center_style),
+            Paragraph("Fill Rate (%)", th_center_style),
+            Paragraph("Service Lvl (%)", th_center_style),
+            Paragraph("Holding Vol (L)", th_center_style),
+            Paragraph("Turnover", th_center_style)
+        ],
+        [
+            Paragraph("Lean Baseline (1d Buffer)", td_bold_style),
+            Paragraph("432", td_center_style),
+            Paragraph("104.3 L", td_center_style),
+            Paragraph("34.87%", td_center_style),
+            Paragraph("85.00%", td_center_style),
+            Paragraph("8.7 L", td_center_style),
+            Paragraph("18.5x", td_center_style)
+        ],
+        [
+            Paragraph("Static Average Par Level", td_bold_style),
+            Paragraph("155", td_center_style),
+            Paragraph("24.7 L", td_center_style),
+            Paragraph("84.60%", td_center_style),
+            Paragraph("94.62%", td_center_style),
+            Paragraph("32.6 L", td_center_style),
+            Paragraph("4.9x", td_center_style)
+        ],
+        [
+            Paragraph("Dynamic ML Par (Proposed)", td_bold_style),
+            Paragraph("146", td_center_style),
+            Paragraph("26.8 L", td_center_style),
+            Paragraph("83.26%", td_center_style),
+            Paragraph("94.93%", td_center_style),
+            Paragraph("36.3 L", td_center_style),
+            Paragraph("4.4x", td_center_style)
+        ]
     ]
-    sim_table = Table(sim_data, colWidths=[130, 56, 64, 64, 68, 70, 52])
+    sim_table = Table(sim_data, colWidths=[124, 54, 64, 66, 68, 70, 58])
     sim_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#2b5c8f")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f7fafc")]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ('TOPPADDING', (0, 0), (-1, -1), 3.5),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3.5),
-        ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+        ('TOPPADDING', (0, 0), (-1, -1), 3),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     story.append(sim_table)
-    story.append(Spacer(1, 5))
+    story.append(Spacer(1, 4))
 
     story.append(Paragraph(
         "<b>Core Finding:</b> The Dynamic ML Par policy slashes stockout incidents from <b>432 down to 146 (-66.2%)</b> while hitting the target <b>94.93% service level</b>. "
@@ -273,14 +366,14 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
         "of weekend rushes and automatically contracts par levels on Sunday nights, keeping weekday holding costs exceptionally lean.",
         body_style
     ))
-    story.append(Spacer(1, 5))
+    story.append(Spacer(1, 4))
 
     # Planned Future Improvements
     story.append(Paragraph("<b>Planned Model Enhancements:</b>", body_style))
     story.append(Paragraph("• <b>Promotional & Banquet Awareness:</b> Ingest hotel banquet bookings and happy hour schedules as explicit exogenous feature regressors.", bullet_style))
     story.append(Paragraph("• <b>Joint Vendor Delivery Consolidation:</b> Bundle multi-brand orders to meet supplier minimum order quantities (MOQ) and capture bulk volume discounts.", bullet_style))
     story.append(Paragraph("• <b>Intermittent Demand Architectures:</b> Implement Croston's Method and deep temporal Point Process models for ultra-slow Class C luxury spirits.", bullet_style))
-    story.append(Spacer(1, 6))
+    story.append(Spacer(1, 5))
 
     # Prompt 5: Production Deployment & Operational Architecture
     story.append(Paragraph("5. Real-World Deployment & Production Considerations", h1_style))
@@ -291,25 +384,43 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
     story.append(Spacer(1, 3))
 
     arch_data = [
-        ["Stage", "Trigger / Frequency", "Operational Process & Output"],
-        ["Data Ingestion", "Daily @ 05:00 AM", "Automated POS ledger extraction; computes previous day consumption; validates conservation equation."],
-        ["Model Inference", "Daily @ 05:30 AM", "Generates 7-day recursive demand forecasts; computes rolling standard deviation volatility metrics."],
-        ["Par Recommendation", "Daily @ 06:00 AM", "Applies dynamic par formula ($L=2, Z=1.645$); flags 'Stockout Emergency', 'Urgent Reorder', or 'Overstocked'."],
-        ["Manager Dashboard", "Daily @ 06:30 AM", "Dispatches pre-populated supplier purchase orders to bar managers for one-click ERP approval."]
+        [
+            Paragraph("Stage", th_style),
+            Paragraph("Trigger / Frequency", th_style),
+            Paragraph("Operational Process & Output", th_style)
+        ],
+        [
+            Paragraph("Data Ingestion", td_bold_style),
+            Paragraph("Daily @ 05:00 AM", td_style),
+            Paragraph("Automated POS ledger extraction; computes previous day consumption; validates conservation equation.", td_style)
+        ],
+        [
+            Paragraph("Model Inference", td_bold_style),
+            Paragraph("Daily @ 05:30 AM", td_style),
+            Paragraph("Generates 7-day recursive demand forecasts; computes rolling standard deviation volatility metrics.", td_style)
+        ],
+        [
+            Paragraph("Par Recommendation", td_bold_style),
+            Paragraph("Daily @ 06:00 AM", td_style),
+            Paragraph("Applies dynamic par formula (L=2 days, Z=1.645); flags 'Stockout Emergency', 'Urgent Reorder', or 'Overstocked'.", td_style)
+        ],
+        [
+            Paragraph("Manager Dashboard", td_bold_style),
+            Paragraph("Daily @ 06:30 AM", td_style),
+            Paragraph("Dispatches pre-populated supplier purchase orders to bar managers for one-click ERP approval.", td_style)
+        ]
     ]
-    arch_table = Table(arch_data, colWidths=[90, 100, 314])
+    arch_table = Table(arch_data, colWidths=[95, 105, 304])
     arch_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#2d3748")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 7.5),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor("#f7fafc")]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ('TOPPADDING', (0, 0), (-1, -1), 3),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ('TOPPADDING', (0, 0), (-1, -1), 2.5),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 2.5),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     story.append(arch_table)
-    story.append(Spacer(1, 5))
+    story.append(Spacer(1, 4))
 
     story.append(Paragraph("<b>Operational Failure Modes & Production Safeguards:</b>", body_style))
     story.append(Paragraph("• <b>Lead Time Uncertainty:</b> Delivery delays (e.g. 4 days instead of 2) cause stockouts under deterministic assumptions. The production system applies stochastic lead-time variance $\\sigma_{\\text{total}} = \\sqrt{L \\sigma_D^2 + D^2 \\sigma_L^2}$.", bullet_style))
@@ -318,6 +429,7 @@ def build_pdf_report(output_filename: str = "report/business_report.pdf"):
 
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"Successfully generated {output_filename} (2 pages, executive format).")
+
 
 
 if __name__ == "__main__":
